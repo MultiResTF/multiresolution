@@ -24,18 +24,28 @@ backgrounds for foreground object detection, IEEE Trans. Image Process. 13 (2004
 ### Example Files:
 
 each of these run a different example
+
 ex_2d.m
+
 ex_aviris.m
+
 ex_bootstrap.m
+
 ex_mall.m
+
 ex_samson.m
+
 ex_urban.m
+
 ex_watersurface.m
+
 check_recovery.m - confirms local convergence guarantees
 
 ### Main files:
 iterate_multiscale_TT.m - runs the alternating decomposition algorithm into
+
 the multiscale TT-format
+
 one_iteration.m - finds the optimum scale tensor at a given scale.
 
 ### Remaining files:
