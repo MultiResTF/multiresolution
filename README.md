@@ -1,4 +1,4 @@
-The following files accompany the paper "https://arxiv.org/abs/1908.11413"
+The following files accompany the paper https://arxiv.org/abs/1908.11413
 
 The examples use the following datafiles which must be downloaded and placed
 into the folder indicated in the code:
