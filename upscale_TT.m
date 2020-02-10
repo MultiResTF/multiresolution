@@ -16,6 +16,7 @@ res_r = r;
 curr_pos = 1;
 curr_pos_exp = 1;
 for kind = 1:d
+
     tmp_core = reshape( core(curr_pos: (curr_pos + r(kind)*n(kind)*r(kind+1)-1)), ...
         [r(kind), n(kind), r(kind+1)]);
     tmp_res_core = zeros(r(kind), n(kind)/2, r(kind+1));
@@ -35,4 +36,6 @@ tup.r = res_r;
 tup.n = res_n;
 tup.core=res_core;
 tup.ps = res_pos;
+
+
 end
