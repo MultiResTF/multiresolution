@@ -43,10 +43,9 @@ for k = 1:levels-1
 end
 
 if niter > 1
-    res{levels} = cp_als_mixed(tensor(A), Atmpup, rank_list(levels), 'printitn', 1,'maxiters',50,'init',res_old{levels}.u);
+    res{levels} = cp_als_mixed(tensor(A), Atmpup, rank_list(levels), 'printitn', 0,'maxiters',50,'init',res_old{levels}.u);
 else
-    res{levels} = cp_als_mixed(tensor(A), Atmpup, rank_list(levels), 'printitn', 1,'maxiters',50);
+    res{levels} = cp_als_mixed(tensor(A), Atmpup, rank_list(levels), 'printitn', 0,'maxiters',50);
 end
 
 end
-
