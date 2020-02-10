@@ -1,107 +1,89 @@
 %% Computes multiscale representation of a video.
-%% Requires the TT-toolbox to be installed
+%% Requires the tensor toolbox to be installed
 
 clc; clf; clear all; close all
 
-levels = 8;
+disp('ex_mall_several_larger')
+levels = 9;
 d = 3;
 n = 2^(levels-1);
-A = zeros(n*[1,1,10]);
+A = zeros(n*ones(1,d));
 
-for imgn = 1775:3054
-    name = sprintf('Bootstrap/b%05d.bmp', imgn);
+for imgn = 1000:2279
+    name = sprintf('ShoppingMall/ShoppingMall%d.bmp', imgn);
     tmp = imread(name);
     tmp = im2double(rgb2gray(tmp));
-    tmp = imresize(tmp,[n n]);
-    A(:, :, imgn+1-1775) = tmp;
+    tmp = imresize(tmp,[2^(levels-1) 2^(levels-1)]);
+    A(:, :, imgn-999) = tmp;
 end
 
 A_orig = A;
+nA = norm(tensor(A));
 
 disp('loaded data')
-A = tt_tensor(A)
-disp('converted TT')
 
 
 %%
 rank_tol = 1e-6;
-maxiter = 200;%100;%maximum number of iterations
+maxiter = 200;%200;%100;
 conv_tol = 1e-6;
 
-scale_ranks = [50:45:320 410:90:680];%maximum TT-rank for each scale
-
-%errors
+scale_ranks = 50:50:250;%256;%70:10:120;%10:10:30;%10:10:110;%60:20:200;
 error_multi = zeros(length(scale_ranks),1);
-error_TT = zeros(length(scale_ranks),1);
+error_candecomp = zeros(length(scale_ranks),1);
 
-%storage costs
 storage_multi = zeros(length(scale_ranks),1);
 storage_TT = zeros(length(scale_ranks),1);
 
-%computation times
 times_multi = zeros(length(scale_ranks),1);
 times_TT = zeros(length(scale_ranks),1);
 
 for sind = 1:length(scale_ranks)
     scale_rank = scale_ranks(sind)
     warning('off')
+    
+    tic
+    Adirect = cp_als(tensor(A), 2*scale_rank, 'printitn',1,'maxiters',50);
+ 
+    t1 = toc;
+    times_TT(sind) = t1;
 
     m = levels;
     levels_to_use = (levels-m+1):levels;
     rank_list = [zeros(levels-m,1); scale_rank*ones(m,1)];
-
-
-    %compute the multiscale representation
     tic
-    res2 = iterate_multiscale_TT(A, levels, levels_to_use, maxiter, rank_list, conv_tol, 0);
+    res2 = iterate_multiscale_candecomp_f(A, levels, levels_to_use, maxiter, rank_list, conv_tol);
     t1 = toc;
     times_multi(sind) = t1;
 
-
-    %convert to full tensor to check accuracy
     A1 = res2{1};
     for k = 2:levels
-        A1 = downscale_TT(A1) + res2{k};
+        A1 = downscale_candecomp(A1) + res2{k};
     end
-    toc
 
+    error_multi(sind) = sqrt(nA^2 + norm(A1)^2 - 2*innerprod(tensor(A),A1))/nA;
+    error_candecomp(sind) = sqrt(nA^2 + norm(Adirect)^2 - 2*innerprod(tensor(A),Adirect))/nA;
 
-
-    %compare to tensor-train representation
-
-    tic
-    Adirect = (round(A,1e-16, ceil(0.95*sqrt(2)*scale_rank)));
-    t1 = toc;
-    times_TT(sind) = t1;
-
-    %compute accuracies
-    error_multi(sind) = norm(A-A1)/norm(A);
-    error_TT(sind) = norm(A-Adirect)/norm(A);
-
-    %compute storage-costs  
     st = 0;
-    for k = 1:levels
-        st = st + storage_size_osel(round(res2{k}, 1e-16));
+    for k = levels-m+1:levels
+        st = st + numel(res2{k}.U{1})+numel(res2{k}.U{2})+numel(res2{k}.U{3});
     end
-    
-    %plot during loop
     storage_multi(sind) = st;
-    storage_TT(sind) = storage_size_osel(Adirect);
+    storage_TT(sind) = numel(Adirect.U{1})+numel(Adirect.U{2})+numel(Adirect.U{3});
+    sA = numel(A);
     figure(1)
     hold on
-    plot(error_multi, numel(Ause)./storage_multi, '*-b')
-    plot(error_TT, numel(Ause)./storage_TT, '*-r')
+    plot(error_multi, sA./storage_multi, '*-b')
+    plot(error_candecomp, sA./storage_TT, '*-r')
 end
 
-
 %%
-%plot results
 
 clf
 figure(1)
-semilogy(error_multi, numel(Ause)./storage_multi, '*-b')
+semilogy(error_multi, numel(A)./storage_multi, '*-b')
 hold on
-semilogy(error_TT, numel(Ause)./storage_TT, 's-r')
+semilogy(error_candecomp, numel(A)./storage_TT, 's-r')
 
 
 set(gca,...
@@ -116,7 +98,7 @@ xlabel('Relative error',...
     'FontSize',24,...
     'FontName','Times')
 
-ylim([0.8, 100])
+ylim([6, 35])
 ylabel('Compression ratio',...
     'FontUnits','points',...
     'interpreter','latex',...
@@ -124,7 +106,7 @@ ylabel('Compression ratio',...
     'FontName','Times')
     grid()
 
-legend({'Multiscale', 'Tensor-train','$g:$ TR-format'},...
+legend({'Multiscale', 'Tensor-train'},...
         'location', 'NorthWest',...
         'FontUnits','points',...
         'interpreter','latex',...
@@ -132,15 +114,16 @@ legend({'Multiscale', 'Tensor-train','$g:$ TR-format'},...
         'FontName','Times')
     pbaspect([2 1 1])
 
-% print -dpdf bootstrap_storageM200_larger.pdf
+% print -dpdf mall_storageM200_candecomp.pdf
 
 
 %%
+
 clf
 figure(2)
 plot(error_multi, times_multi./(maxiter), '>:', 'Color', [0.6350    0.0780    0.1840])
 hold on
-plot(error_TT, times_TT, '<-.', 'Color',[0    0.4470    0.7410])
+plot(error_candecomp, times_TT, '<-.', 'Color',[0    0.4470    0.7410])
 
 
 set(gca,...
@@ -169,5 +152,6 @@ legend({'Multiscale/iteration', 'Tensor-train'},...
         'FontSize',24,...
         'FontName','Times')
     pbaspect([2 1 1])
-% print -dpdf bootstrap_timeM200_larger.pdf
+% print -dpdf mall_timeM200_candecomp.pdf
+
 

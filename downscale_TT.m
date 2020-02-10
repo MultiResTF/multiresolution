@@ -16,10 +16,11 @@ res_r = r;
 curr_pos = 1;
 curr_pos_exp = 1;
 for kind = 1:d
+
     tmp_core = reshape( core(curr_pos: (curr_pos + r(kind)*n(kind)*r(kind+1)-1)), ...
         [r(kind), n(kind), r(kind+1)]);
     tmp_res_core = zeros(r(kind), 2*n(kind), r(kind+1));
-    for i = 1:n
+    for i = 1:n(kind)
         tmp_res_core(:,2*i-1,:) = tmp_core(:,i,:);
         tmp_res_core(:,2*i,:) = tmp_core(:,i,:);
     end
@@ -36,5 +37,6 @@ tdown.r = res_r;
 tdown.n = res_n;
 tdown.core=res_core;
 tdown.ps = res_pos;
+
 
 end

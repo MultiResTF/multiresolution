@@ -8,7 +8,9 @@ Atmpdown = A;
 for l = length(res):-1:2
     if ismember(l, levels_to_use)
         if round_bool == 1
+            tic;
              Atmpdown = round(Atmpdown - res{l}, 1e-16);
+             toc
         else
             Atmpdown = Atmpdown - res{l};
         end
@@ -17,9 +19,12 @@ for l = length(res):-1:2
     res_tmp{l} = Atmpdown;
 end
 
-Atmpup = 0*tt_ones(1, d);
+
+smallest_n = min(size(A));
+Atmpup = 0*tt_ones(size(A)/smallest_n, d);
 for k = 1:levels-1
     if ismember(k, levels_to_use)
+
         Atmp = round(res_tmp{k+1} - Atmpup,1e-16,rank_list(k));
         Atmpup = downscale_TT(Atmpup + Atmp);
         res{k} = Atmp;

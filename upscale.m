@@ -1,5 +1,6 @@
 function Aup = upscale(A)
-%Implements the operator ave_1 for a matrix
+% Implementation of the operator ave_1 for a matrix.
+
 [n,~] = size(A);
 Aup = zeros(n/2, n/2);
 

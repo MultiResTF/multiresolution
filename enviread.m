@@ -1,4 +1,7 @@
 function I=enviread(varargin)
+
+%Downloaded from https://www.mathworks.com/matlabcentral/mlc-downloads/downloads/submissions/15629/versions/3/previews/enviread.m/index.html
+
 %enviread: Read binary image files using ENVI header information
 %I=enviread('filename') where the header file is named filename.hdr
 %and exists in the same directory. Otherwise use 

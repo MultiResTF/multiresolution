@@ -1,4 +1,8 @@
 function info = read_envihdr(hdrfile)
+
+%Jaroslaw Tuszynski (2020). 
+%read_envihdr (downloaded from https://www.mathworks.com/matlabcentral/fileexchange/38500-read_envihdr), MATLAB Central File Exchange.
+
 % READ_ENVIHDR read and return ENVI image file header information.
 %   INFO = READ_ENVIHDR('HDR_FILE') reads the ASCII ENVI-generated image
 %   header file and returns all the information in a structure of

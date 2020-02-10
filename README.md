@@ -1,7 +1,7 @@
 The following files accompany the paper https://arxiv.org/abs/1908.11413
 
 The examples use the following datafiles which must be downloaded and placed
-into the folder indicated in the code:
+into the folder indicated in the code. Moreover, the TT-toolbox (https://github.com/oseledets/TT-Toolbox) and tensor toolbox (http://www.tensortoolbox.org/) need to be installed to run the examples using the tensor-train or the canonical decomposition, respectively.
 
 ## Data files:
 [3] Daniel Schwen, File:NYC wideangle south from Top of the Rock.jpg, 2005, Distributed under a Creative Commons Attribution-Share Alike 2.5 Generic license. Available at https://commons.wikimedia.org/wiki/File:NYC_wideangle_south_from_Top_of_the_Rock.jpg, accessed Jan. 29, 2019.
@@ -42,11 +42,11 @@ ex_watersurface.m
 check_recovery.m - confirms local convergence guarantees
 
 ### Main files:
-iterate_multiscale_TT.m - runs the alternating decomposition algorithm into
+iterate_multiscale_TT.m/iterate_multiscale_candecomp_f.m - runs the alternating decomposition algorithm into
 
-the multiscale TT-format
+the multiresolution TT-format/canonical format
 
-one_iteration.m - finds the optimum scale tensor at a given scale.
+one_iteration_TT.m/one_iteration_candecomp_f.m - finds the optimum scale tensor at a given scale.
 
 ### Remaining files:
 helper files
